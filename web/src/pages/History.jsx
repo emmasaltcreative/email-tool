@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../supabaseClient";
+import { sanitizeEmailHtml } from "../utils/sanitizeEmailHtml.js";
 
 function History() {
   const [emails, setEmails] = useState([]);
@@ -74,7 +75,7 @@ function History() {
                 marginTop: "8px",
                 backgroundColor: "white",
               }}
-              srcDoc={e.html}
+              srcDoc={sanitizeEmailHtml(e.html)}
             />
           </div>
         ))

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../supabaseClient";
+import { sanitizeEmailHtml } from "../utils/sanitizeEmailHtml.js";
 
 function GenerateEmail() {
   const [brief, setBrief] = useState("");
@@ -22,14 +23,15 @@ function GenerateEmail() {
       if (!res.ok) throw new Error(`Function error: ${res.statusText}`);
 
       const data = await res.json();
-      const emailHtml = data.email || "No email returned.";
-      setResponse(emailHtml);
+      const cleanedEmail = sanitizeEmailHtml(data.email || "");
+      const finalEmail = cleanedEmail || "No email returned.";
+      setResponse(finalEmail);
 
       // Save to Supabase
       const { error } = await supabase.from("emails").insert([
         {
           brief,
-          html: emailHtml,
+          html: finalEmail,
           created_at: new Date().toISOString(),
         },
       ]);
