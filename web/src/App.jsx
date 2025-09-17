@@ -17,7 +17,11 @@ function App() {
           justifyContent: "space-between",
         }}
       >
-        <img src="/logo.png" alt="Salt Creative" style={{ height: "28px" }} />
+        <img
+          src="https://saltassets.b-cdn.net/New%20Alt%20Black.png"
+          alt="Salt Creative"
+          style={{ height: "24px" }}
+        />
         <nav>
           <Link
             to="/"
