@@ -1,4 +1,7 @@
+// src/pages/Reports.jsx
 import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
+
 
 function Reports() {
   const [stats, setStats] = useState(null);
@@ -6,9 +9,21 @@ function Reports() {
   useEffect(() => {
     async function fetchReports() {
       try {
-        const res = await fetch("/api/get-reports");
-        const data = await res.json();
-        setStats(data);
+        // Pull aggregate stats from Supabase
+        const { data, error } = await supabase
+          .from("emails")
+          .select("brief, content, created_at");
+
+        if (error) throw error;
+
+        const totalEmails = data.length;
+        const latestBriefs = data.slice(0, 5).map((e) => e.brief);
+
+        // placeholder rates until you track them
+        const avgOpenRate = 0.45;
+        const avgClickRate = 0.12;
+
+        setStats({ totalEmails, latestBriefs, avgOpenRate, avgClickRate });
       } catch (err) {
         console.error(err);
       }
@@ -39,13 +54,13 @@ function Reports() {
         Reports
       </h2>
 
-      <p style={{ fontFamily: "'Noto Serif', serif', color: '#5A6B7B" }}>
+      <p style={{ fontFamily: "'Noto Serif', serif", color: "#5A6B7B" }}>
         📊 Total Emails Generated: <strong>{stats.totalEmails}</strong>
       </p>
-      <p style={{ fontFamily: "'Noto Serif', serif', color: '#5A6B7B" }}>
+      <p style={{ fontFamily: "'Noto Serif', serif", color: "#5A6B7B" }}>
         📬 Avg Open Rate: <strong>{(stats.avgOpenRate * 100).toFixed(1)}%</strong>
       </p>
-      <p style={{ fontFamily: "'Noto Serif', serif', color: '#5A6B7B" }}>
+      <p style={{ fontFamily: "'Noto Serif', serif", color: "#5A6B7B" }}>
         🔗 Avg Click Rate: <strong>{(stats.avgClickRate * 100).toFixed(1)}%</strong>
       </p>
 

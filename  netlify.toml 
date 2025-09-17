@@ -1,12 +1,16 @@
 [build]
-  command = "npm run build --prefix web"
+  base = "web"
+  command = "npm run build"
   publish = "web/dist"
 
-[dev]
-  command = "npm run dev --prefix web"
-  publish = "web/dist"
-  port = 5173
 
+# ✅ SPA redirect: keeps React/Vite routes working
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# ✅ Functions redirect: sends /api/* calls to Netlify Functions
 [[redirects]]
   from = "/api/*"
   to = "/.netlify/functions/:splat"

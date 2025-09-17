@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
+import { supabase } from "../supabaseClient";
 
 function History() {
   const [emails, setEmails] = useState([]);
 
   useEffect(() => {
     async function fetchEmails() {
-      const res = await fetch("/api/get-emails?limit=10");
-      const data = await res.json();
-      setEmails(data || []);
+      try {
+        const { data, error } = await supabase
+          .from("emails")
+          .select("brief, html, created_at")
+          .order("created_at", { ascending: false })
+          .limit(10);
+        if (error) throw error;
+        setEmails(data || []);
+      } catch (err) {
+        console.error("Fetch emails error:", err);
+      }
     }
     fetchEmails();
   }, []);
@@ -32,6 +41,7 @@ function History() {
       >
         Email History
       </h2>
+
       {emails.length === 0 ? (
         <p style={{ color: "#5A6B7B" }}>No emails saved yet.</p>
       ) : (
@@ -52,9 +62,20 @@ function History() {
             >
               <strong>Brief:</strong> {e.brief}
             </p>
-            <p style={{ fontFamily: "'Noto Serif', serif", color: "#5A6B7B" }}>
-              {e.content}
-            </p>
+
+            {/* ✅ Inline preview */}
+            <iframe
+              title={`Email-${idx}`}
+              style={{
+                width: "100%",
+                height: "200px",
+                border: "1px solid #E8E4DE",
+                borderRadius: "8px",
+                marginTop: "8px",
+                backgroundColor: "white",
+              }}
+              srcDoc={e.html}
+            />
           </div>
         ))
       )}
